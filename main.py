@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 23 21:24:44 2024
-
-@author: klaudiahajbowicz
-"""
-
 import sys
 
 from math import sin, cos, sqrt, atan, atan2, degrees, radians, pi, tan, floor, modf
