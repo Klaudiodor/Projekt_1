@@ -427,3 +427,37 @@ class Transformacje:
                         print(f"Incorrect number of coordinates in line: {line}")
         return coordinates
 
+
+if __name__ == "__main__":
+
+    print("Pick model (one of: wgs84, grs80, mars)")
+    model = input("")
+    print("Choose transformation (one of: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)")
+    transformation = input("")
+    print("Provide source file")
+    file = input("")
+    print("")
+
+    geo = Transformacje(file, model)
+
+    if transformation == "xyz2plh":
+        print("Pick data output type for XYZ -> BLH transformation (one of: dec_degree, dms)")
+        output_type = input("")
+        print("")
+        geo.xyz2plh(True, output_type)
+        print("Transformation of XYZ -> BLH saved to result_xyz2plh.txt")
+    elif transformation == "plh2xyz":
+        geo.plh2xyz()
+        print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
+    elif transformation == "xyz2neu":
+        geo.xyz2neu()
+        print("Transformation of XYZ -> NEUp saved to xyz2neu.txt")
+    elif transformation == "fl22000":
+        geo.fl22000()
+        print("Transformation of BL -> 2000 saved to fl22000.txt")
+    elif transformation == "fl21992":
+        geo.fl21992()
+        print("Transformation of BL -> 1992 saved to fl21992.txt")
+    else:
+        print("Wrong transformation type")
+
