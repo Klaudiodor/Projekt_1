@@ -35,3 +35,4 @@ class Transformacje:
 
         self.xyz = self.readfile(file)
         self.plh = self.xyz2plh(False)
+
