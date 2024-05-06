@@ -36,3 +36,56 @@ class Transformacje:
         self.xyz = self.readfile(file)
         self.plh = self.xyz2plh(False)
 
+    def xyz2plh(self, data_write, output='dec_degree'):
+        """
+        Algorytm Hirvonena - algorytm transformacji współrzędnych ortokartezjańskich (x, y, z)
+        na współrzędne geodezyjne długość szerokość i wysokośc elipsoidalna (phi, lam, h). Jest to proces iteracyjny.
+        W wyniku 3-4-krotneej iteracji wyznaczenia wsp. phi można przeliczyć współrzędne z dokładnoscią ok 1 cm.
+        Parameters
+        ----------
+        X, Y, Z : FLOAT
+             współrzędne w układzie orto-kartezjańskim,
+
+        Returns
+        -------
+        lat
+            [stopnie dziesiętne] - szerokość geodezyjna
+        lon
+            [stopnie dziesiętne] - długośc geodezyjna.
+        h : TYPE
+            [metry] - wysokość elipsoidalna
+        output [STR] - optional, defoulf
+            dec_degree - decimal degree
+            dms - degree, minutes, sec
+        """
+
+        """
+        Processes a list of coordinate tuples (X, Y, Z) and converts them to geodetic coordinates.
+        """
+        results = []
+        for X, Y, Z in self.xyz:
+            r = sqrt(X ** 2 + Y ** 2)
+            lat_prev = atan(Z / (r * (1 - self.ecc2)))
+            lat = 0
+            while abs(lat_prev - lat) > 0.000001 / 206265:
+                lat_prev = lat
+                N = self.a / sqrt(1 - self.ecc2 * sin(lat_prev) ** 2)
+                h = r / cos(lat_prev) - N
+                lat = atan((Z / r) * (((1 - self.ecc2 * N / (N + h)) ** (-1))))
+            lon = atan(Y / X)
+            N = self.a / sqrt(1 - self.ecc2 * sin(lat) ** 2)
+            h = r / cos(lat) - N
+
+            if output == 'dec_degree':
+                result = (degrees(lat), degrees(lon), h)
+            elif output == 'dms':
+                result = (self.deg2dms(degrees(lat)), self.deg2dms(degrees(lon)), h)
+            else:
+                raise NotImplementedError(f"{output} - output format not defined")
+
+            results.append(result)
+
+        if data_write:
+            self.write2file("xyz2plh", results)
+
+        return results
