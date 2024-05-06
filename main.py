@@ -150,3 +150,51 @@ class Transformacje:
             d = -d
 
         return (d, m, s)
+
+    def xyz2neu(self):
+        """
+        Trnasformacja współrzędnych do układu współrzędnych horyzontalnych
+        north, east, up (n, e, u) z współrzędnych ortokartezjańskich (x, y, z).
+        Transformacja odbywa się przy pomocy macierzy obrotu gdzie po przemnożeniu
+        współrzędnych x, y, z, dostajemy współrzędne n, e u.
+
+        Parameters
+        ----------
+        X, Y, Z : FLOAT
+             współrzędne w układzie ortokartezjańskim,
+
+        Returns
+        -------
+        N, E, U : FLOAT
+            współrzędne w ukladzie north, east, up
+        """
+
+        results = []
+        for x, y, z in self.xyz:
+            p = sqrt(x ** 2 + y ** 2)
+            f = atan(z / (p * (1 - self.ecc2)))
+
+            while True:
+                Rn = self.a / (sqrt(1 - self.ecc2 * sin(f) ** 2))
+                h = (p / cos(f)) - Rn
+                fs = f
+                f = atan(z / (p * (1 - (self.ecc2 * (Rn / (Rn + h))))))
+                if abs(fs - f) < (0.000001 / 206265):  # zamienione sekundy na radiany
+                    break
+            l = atan2(y, x)
+
+            R = array([[-sin(f) * cos(l), -sin(l), cos(f) * cos(l)],
+                       [-sin(f) * sin(l), cos(l), sin(l) * cos(f)],
+                       [cos(f), 0, sin(f)]])
+
+            dX = array([x, y, z])
+            dx = R.T @ dX
+            n = dx[0]
+            e = dx[1]
+            u = dx[2]
+
+            results.append((n, e, u))
+
+        self.write2file("xyz2neu", results)
+
+        return results
