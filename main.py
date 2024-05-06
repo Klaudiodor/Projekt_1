@@ -198,3 +198,79 @@ class Transformacje:
         self.write2file("xyz2neu", results)
 
         return results
+
+    def fl22000(self):
+        """
+        Algorytm transformacji szerokoci i wysokoci geodezyjnej (phi, lam) do układu współrzędnych
+        płaskiech prostokątnych PL-2000 (x-2000, y-2000).
+        Jest to proces wykorzystujący współrzędne w odwzorowaniu G-K.
+        Układ PL-2000 wykorzystuje 4 pasy południkowe o szerokoci 3 stopni (15, 18, 21, 24 [st])
+
+        Parameters
+        ----------
+        phi : FLOAT
+            [stopnie dziesiętne]
+        lam : FLOAT
+            [stopnie dziesiętne]
+
+        Returns
+        -------
+        X, Y : FLOAT
+            Współrzedne w układzie 2000
+
+        """
+
+        m0_2000 = 0.999923
+
+        b2 = (self.a ** 2) * (1 - self.ecc2)
+        ep2 = (self.a ** 2 - b2) / b2
+
+        results = []
+
+        for phi, lam, h in self.plh:
+
+            phi = radians(phi)
+            lam = radians(lam)
+
+            if lam < radians(16.5):
+                nr = 5
+                l_20 = 15 * pi / 180
+            elif lam < radians(19.5) and lam > radians(16.5):
+                nr = 6
+                l_20 = 18 * pi / 180
+            elif lam < radians(22.5) and lam > radians(19.5):
+                nr = 7
+                l_20 = 21 * pi / 180
+            elif lam > radians(22.5):
+                nr = 8
+                l_20 = 24 * pi / 180
+
+            dl = lam - l_20
+            t = tan(phi)
+
+            eta2 = ep2 * cos(phi) ** 2
+
+            Rn = self.a / (sqrt(1 - self.ecc2 * sin(phi) ** 2))
+
+            A0 = 1 - (self.ecc2 / 4) - (3 * self.ecc2 ** 2 / 64) - 5 * self.ecc2 ** 3 / 256
+            A2 = (3 / 8) * (self.ecc2 + (self.ecc2 ** 2) / 4 + ((15 * self.ecc2 ** 3) / 128))
+            A4 = (15 / 256) * ((self.ecc2 ** 2) + ((3 * self.ecc2 ** 3) / 4))
+            A6 = (35 * (self.ecc2 ** 3)) / 3072
+
+            sigma = self.a * (A0 * phi - A2 * sin(2 * phi) + A4 * sin(4 * phi) - A6 * sin(6 * phi))
+
+            x_GK = sigma + (dl ** 2 / 2) * Rn * sin(phi) * cos(phi) * (
+                        1 + (dl ** 2 / 12) * cos(phi) ** 2 * (5 - t ** 2 + 9 * eta2 + 4 * eta2 ** 2) + (
+                            dl ** 4 / 360) * cos(phi) ** 4 * (61 - 58 * t ** 2 + 270 * eta2 - 330 * eta2 * t ** 2))
+            y_GK = dl * Rn * cos(phi) * (
+                        1 + (dl ** 2 / 6) * cos(phi) ** 2 * (1 - t ** 2 + eta2) + (dl ** 4 / 120) * cos(phi) ** 4 * (
+                            5 - 18 * t ** 2 + t ** 4 + 14 * eta2 - 58 * eta2 * t ** 2))
+
+            x_2000 = x_GK * m0_2000
+            y_2000 = y_GK * m0_2000 + nr * 1000000 + 500000
+
+            results.append((x_2000, y_2000))
+
+        self.write2file("fl22000", results)
+
+        return results
