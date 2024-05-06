@@ -120,3 +120,33 @@ class Transformacje:
 
             self.write2file("plh2xyz", results)
         return results
+
+    def deg2dms(self, deg):
+        """
+        Zamiana stopni stopni dziesiętnych na
+        format stopnie minuty sekundy [st mm ss]
+
+        Parameters
+        ----------
+        deg : float
+            Decimal degree to be converted.
+
+        Returns
+        -------
+        tuple
+            A tuple (degrees, minutes, seconds) where:
+            - degrees is an integer,
+            - minutes is an integer,
+            - seconds is a float.
+        """
+        negative = deg < 0
+        deg = abs(deg)
+        d = floor(deg)
+        rem = (deg - d) * 60
+        m = floor(rem)
+        s = (rem - m) * 60
+
+        if negative:
+            d = -d
+
+        return (d, m, s)
