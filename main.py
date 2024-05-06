@@ -89,3 +89,34 @@ class Transformacje:
             self.write2file("xyz2plh", results)
 
         return results
+
+    def plh2xyz(self):
+        """
+        Converts a list of geodetic coordinates (phi, lam, h) to Cartesian coordinates (X, Y, Z).
+
+        Parameters
+        ----------
+        coordinates : list of tuples
+            Each tuple contains (phi, lam, h) in degrees and meters.
+
+        Returns
+        -------
+        list of tuples
+            Each tuple contains (X, Y, Z) as floats, rounded to 3 decimal places.
+        """
+        results = []
+        for phi, lam, h in self.plh:
+            phi = radians(phi)
+            lam = radians(lam)
+
+            Rn = self.a / sqrt(1 - self.ecc2 * sin(phi) ** 2)
+            q = Rn * self.ecc2 * sin(phi)
+
+            X = (Rn + h) * cos(phi) * cos(lam)
+            Y = (Rn + h) * cos(phi) * sin(lam)
+            Z = (Rn + h) * sin(phi) - q
+
+            results.append((round(X, 3), round(Y, 3), round(Z, 3)))
+
+            self.write2file("plh2xyz", results)
+        return results
