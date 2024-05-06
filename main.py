@@ -338,3 +338,60 @@ class Transformacje:
         self.write2file("fl21992", results)
 
         return results
+
+    def write2file(self, transformation, data):
+        """
+        Writes coordinate data to a file.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file where the data will be written.
+        data : list of tuples
+            A list of tuples containing coordinate data (latitude, longitude, height).
+        mode : str, optional
+            The file opening mode, 'w' for write (default) or 'a' for append.
+        """
+        filename = ''
+        if transformation == "xyz2plh":
+            filename = 'result_xyz2plh.txt'
+        elif transformation == "plh2xyz":
+            filename = 'result_plh2xyz.txt'
+        elif transformation == "xyz2neu":
+            filename = 'result_xyz2neu.txt'
+        elif transformation == "fl22000":
+            filename = 'result_fl22000.txt'
+        elif transformation == "fl21992":
+            filename = 'result_fl21992.txt'
+        else:
+            raise ValueError("Unsupported transformation type")
+
+        with open(filename, "w") as file:
+            if isinstance(data, tuple):  # Handle single tuple data
+                data = [data]  # Convert to list for uniform processing
+
+            if transformation == "xyz2plh":
+                for lat, lon, h in data:
+                    if isinstance(lat, tuple) and isinstance(lon, tuple):  # Handling 'dms' format
+                        lat_str = f"{lat[0]:02d}:{lat[1]:02d}:{lat[2]:.2f}"
+                        lon_str = f"{lon[0]:02d}:{lon[1]:02d}:{lon[2]:.2f}"
+                        line = f"{lat_str} {lon_str} {h:.3f}\n"
+                    else:  # Handling 'dec_degree' format
+                        line = f"{lat:.8f} {lon:.8f} {h:.3f}\n"
+                    file.write(line)
+            elif transformation == "plh2xyz":
+                for X, Y, Z in data:
+                    line = f"{X:.3f} {Y:.3f} {Z:.3f}\n"
+                    file.write(line)
+            elif transformation == "xyz2neu":
+                for n, e, u in data:
+                    line = f"{n:.3f} {e:.3f} {u:.3f}\n"
+                    file.write(line)
+            elif transformation == "fl22000":
+                for x_2000, y_2000 in data:
+                    line = f"{x_2000:.3f} {y_2000:.3f}\n"
+                    file.write(line)
+            elif transformation == "fl21992":
+                for x_1992, y_1992 in data:
+                    line = f"{x_1992:.3f} {y_1992:.3f}\n"
+                    file.write(line)
