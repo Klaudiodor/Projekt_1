@@ -395,3 +395,35 @@ class Transformacje:
                 for x_1992, y_1992 in data:
                     line = f"{x_1992:.3f} {y_1992:.3f}\n"
                     file.write(line)
+
+    def readfile(self, filename):
+        """
+        Reads a file with coordinates in the format X,Y,Z where each is separated by a comma.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to read.
+
+        Returns
+        -------
+        coordinates : list of tuples
+            A list where each tuple contains (X, Y, Z) as floats.
+        """
+        coordinates = []
+        with open(filename, 'r') as file:
+            for line in file:
+                if line.strip():  # Ensure the line is not empty
+                    parts = line.strip().split(',')
+                    if len(parts) == 3:  # Ensure each line has exactly three values
+                        try:
+                            X = float(parts[0])
+                            Y = float(parts[1])
+                            Z = float(parts[2])
+                            coordinates.append((X, Y, Z))
+                        except ValueError as e:
+                            print(f"Error converting line to floats: {line}. Error: {e}")
+                    else:
+                        print(f"Incorrect number of coordinates in line: {line}")
+        return coordinates
+
