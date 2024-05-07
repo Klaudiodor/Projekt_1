@@ -462,13 +462,13 @@ if __name__ == "__main__":
             print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
         elif args.transformation == "xyz2neu":
             geo.xyz2neu()
-            print("Transformation of XYZ -> NEU saved to xyz2neu.txt")
+            print("Transformation of XYZ -> NEU saved to result_xyz2neu.txt")
         elif args.transformation == "fl22000":
             geo.fl22000()
-            print("Transformation of BL -> 2000 saved to fl22000.txt")
+            print("Transformation of BL -> 2000 saved to result_fl22000.txt")
         elif args.transformation == "fl21992":
             geo.fl21992()
-            print("Transformation of BL -> 1992 saved to fl21992.txt")
+            print("Transformation of BL -> 1992 saved to result_fl21992.txt")
         else:
             print("Wrong transformation type")
 
@@ -495,12 +495,12 @@ if __name__ == "__main__":
             print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
         elif transformation == "xyz2neu":
             geo.xyz2neu()
-            print("Transformation of XYZ -> NEUp saved to xyz2neu.txt")
+            print("Transformation of XYZ -> NEUp saved to result_xyz2neu.txt")
         elif transformation == "fl22000":
             geo.fl22000()
-            print("Transformation of BL -> 2000 saved to fl22000.txt")
+            print("Transformation of BL -> 2000 saved to result_fl22000.txt")
         elif transformation == "fl21992":
             geo.fl21992()
-            print("Transformation of BL -> 1992 saved to fl21992.txt")
+            print("Transformation of BL -> 1992 saved to result_fl21992.txt")
         else:
             print("Wrong transformation type")
