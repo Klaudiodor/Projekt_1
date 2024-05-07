@@ -430,34 +430,77 @@ class Transformacje:
 
 if __name__ == "__main__":
 
-    print("Pick model (one of: wgs84, grs80, mars)")
-    model = input("")
-    print("Choose transformation (one of: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)")
-    transformation = input("")
-    print("Provide source file")
-    file = input("")
-    print("")
+    parser = argparse.ArgumentParser(description="Coordinate transformation utility.")
 
-    geo = Transformacje(file, model)
+    # Optional flag to decide execution path
+    parser.add_argument('--use_cli', action='store_true', help='Set this flag to use command-line arguments instead of interactive prompts.')
 
-    if transformation == "xyz2plh":
-        print("Pick data output type for XYZ -> BLH transformation (one of: dec_degree, dms)")
-        output_type = input("")
-        print("")
-        geo.xyz2plh(True, output_type)
-        print("Transformation of XYZ -> BLH saved to result_xyz2plh.txt")
-    elif transformation == "plh2xyz":
-        geo.plh2xyz()
-        print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
-    elif transformation == "xyz2neu":
-        geo.xyz2neu()
-        print("Transformation of XYZ -> NEUp saved to xyz2neu.txt")
-    elif transformation == "fl22000":
-        geo.fl22000()
-        print("Transformation of BL -> 2000 saved to fl22000.txt")
-    elif transformation == "fl21992":
-        geo.fl21992()
-        print("Transformation of BL -> 1992 saved to fl21992.txt")
+    # Define arguments
+    parser.add_argument('--model', type=str, choices=['wgs84', 'grs80', 'mars'], help='Choose the geodetic model.')
+    parser.add_argument('--transformation', type=str, choices=['xyz2plh', 'plh2xyz', 'xyz2neu', 'fl22000', 'fl21992'], help='Choose the type of transformation.')
+    parser.add_argument('--file', type=str, help='Specify the source file with coordinates.')
+    parser.add_argument('--output_type', type=str, choices=['dec_degree', 'dms'], default='dec_degree', help='Specify output type for the xyz2plh transformation.')
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    if args.use_cli:
+
+        # Ensure all necessary arguments are provided when using CLI mode
+        if not all([args.model, args.transformation, args.file]):
+            parser.error("When using --use_cli, --model, --transformation, and --file are required.")
+
+        # Create an instance of the transformation class with the chosen model
+        geo = Transformacje(file=args.file, model=args.model)
+
+        # Perform the chosen transformation
+        if args.transformation == "xyz2plh":
+            geo.xyz2plh(True, args.output_type)
+            print("Transformation of XYZ -> BLH saved to result_xyz2plh.txt")
+        elif args.transformation == "plh2xyz":
+            geo.plh2xyz()
+            print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
+        elif args.transformation == "xyz2neu":
+            geo.xyz2neu()
+            print("Transformation of XYZ -> NEU saved to xyz2neu.txt")
+        elif args.transformation == "fl22000":
+            geo.fl22000()
+            print("Transformation of BL -> 2000 saved to fl22000.txt")
+        elif args.transformation == "fl21992":
+            geo.fl21992()
+            print("Transformation of BL -> 1992 saved to fl21992.txt")
+        else:
+            print("Wrong transformation type")
+
     else:
-        print("Wrong transformation type")
 
+        print("Pick model (one of: wgs84, grs80, mars)")
+        model = input("")
+        print("Choose transformation (one of: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)")
+        transformation = input("")
+        print("Provide source file")
+        file = input("")
+        print("")
+
+        geo = Transformacje(file, model)
+
+        if transformation == "xyz2plh":
+            print("Pick data output type for XYZ -> BLH transformation (one of: dec_degree, dms)")
+            output_type = input("")
+            print("")
+            geo.xyz2plh(True, output_type)
+            print("Transformation of XYZ -> BLH saved to result_xyz2plh.txt")
+        elif transformation == "plh2xyz":
+            geo.plh2xyz()
+            print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
+        elif transformation == "xyz2neu":
+            geo.xyz2neu()
+            print("Transformation of XYZ -> NEUp saved to xyz2neu.txt")
+        elif transformation == "fl22000":
+            geo.fl22000()
+            print("Transformation of BL -> 2000 saved to fl22000.txt")
+        elif transformation == "fl21992":
+            geo.fl21992()
+            print("Transformation of BL -> 1992 saved to fl21992.txt")
+        else:
+            print("Wrong transformation type")
