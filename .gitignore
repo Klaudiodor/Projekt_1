@@ -163,3 +163,7 @@ cython_debug/
 *.txt
 # Example txt input will be uploaded to the repository
 !input_xyz.txt
+
+*.xml
+*.iml
+*.patch
