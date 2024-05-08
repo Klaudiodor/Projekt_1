@@ -18,6 +18,8 @@ class Transformacje:
         + Inne powierzchnie odniesienia: https://en.wikibooks.org/wiki/PROJ.4#Spheroid
         + Parametry planet: https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
         """
+        self.model = model
+
         if model == "wgs84":
             self.a = 6378137.0  # semimajor_axis
             self.b = 6356752.31424518  # semiminor_axis
@@ -35,6 +37,9 @@ class Transformacje:
 
         self.xyz = self.readfile(file)
         self.plh = self.xyz2plh(False)
+
+    def get_model(self):
+        return self.model
 
     def xyz2plh(self, data_write, output='dec_degree'):
         """
@@ -354,15 +359,15 @@ class Transformacje:
         """
         filename = ''
         if transformation == "xyz2plh":
-            filename = 'result_xyz2plh.txt'
+            filename = f'result_xyz2plh_{self.model}.txt'
         elif transformation == "plh2xyz":
-            filename = 'result_plh2xyz.txt'
+            filename = f'result_plh2xyz_{self.model}.txt'
         elif transformation == "xyz2neu":
-            filename = 'result_xyz2neu.txt'
+            filename = f'result_xyz2neu_{self.model}.txt'
         elif transformation == "fl22000":
-            filename = 'result_fl22000.txt'
+            filename = f'result_fl22000_{self.model}.txt'
         elif transformation == "fl21992":
-            filename = 'result_fl21992.txt'
+            filename = f'result_fl21992_{self.model}.txt'
         else:
             raise ValueError("Unsupported transformation type")
 
@@ -456,19 +461,19 @@ if __name__ == "__main__":
         # Perform the chosen transformation
         if args.transformation == "xyz2plh":
             geo.xyz2plh(True, args.output_type)
-            print("Transformation of XYZ -> BLH saved to result_xyz2plh.txt")
+            print(f"Transformation of XYZ -> BLH saved to result_xyz2plh_{args.model}.txt")
         elif args.transformation == "plh2xyz":
             geo.plh2xyz()
-            print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
+            print(f"Transformation of BLH -> XYZ saved to result_plh2xyz_{args.model}.txt")
         elif args.transformation == "xyz2neu":
             geo.xyz2neu()
-            print("Transformation of XYZ -> NEU saved to result_xyz2neu.txt")
+            print(f"Transformation of XYZ -> NEU saved to result_xyz2neu_{args.model}.txt")
         elif args.transformation == "fl22000":
             geo.fl22000()
-            print("Transformation of BL -> 2000 saved to result_fl22000.txt")
+            print(f"Transformation of BL -> 2000 saved to result_fl22000_{args.model}.txt")
         elif args.transformation == "fl21992":
             geo.fl21992()
-            print("Transformation of BL -> 1992 saved to result_fl21992.txt")
+            print(f"Transformation of BL -> 1992 saved to result_fl21992_{args.model}.txt")
         else:
             print("Wrong transformation type")
 
@@ -489,18 +494,18 @@ if __name__ == "__main__":
             output_type = input("")
             print("")
             geo.xyz2plh(True, output_type)
-            print("Transformation of XYZ -> BLH saved to result_xyz2plh.txt")
+            print(f"Transformation of XYZ -> BLH saved to result_xyz2plh_{model}.txt")
         elif transformation == "plh2xyz":
             geo.plh2xyz()
-            print("Transformation of BLH -> XYZ saved to result_plh2xyz.txt")
+            print(f"Transformation of BLH -> XYZ saved to result_plh2xyz_{model}.txt")
         elif transformation == "xyz2neu":
             geo.xyz2neu()
-            print("Transformation of XYZ -> NEUp saved to result_xyz2neu.txt")
+            print(f"Transformation of XYZ -> NEUp saved to result_xyz2neu_{model}.txt")
         elif transformation == "fl22000":
             geo.fl22000()
-            print("Transformation of BL -> 2000 saved to result_fl22000.txt")
+            print(f"Transformation of BL -> 2000 saved to result_fl22000_{model}.txt")
         elif transformation == "fl21992":
             geo.fl21992()
-            print("Transformation of BL -> 1992 saved to result_fl21992.txt")
+            print(f"Transformation of BL -> 1992 saved to result_fl21992_{model}.txt")
         else:
             print("Wrong transformation type")
