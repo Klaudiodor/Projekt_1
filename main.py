@@ -44,29 +44,29 @@ class Transformacje:
     def xyz2plh(self, data_write, output='dec_degree'):
         """
         Algorytm Hirvonena - algorytm transformacji współrzędnych ortokartezjańskich (x, y, z)
-        na współrzędne geodezyjne długość szerokość i wysokośc elipsoidalna (phi, lam, h). Jest to proces iteracyjny.
-        W wyniku 3-4-krotneej iteracji wyznaczenia wsp. phi można przeliczyć współrzędne z dokładnoscią ok 1 cm.
-        Parameters
+        na współrzędne geodezyjne długość szerokość i wysokość elipsoidalna (phi, lam, h). Jest to proces iteracyjny.
+        W wyniku 3-4-krotnej iteracji wyznaczenia wsp. phi można przeliczyć współrzędne z dokładnością ok. 1 cm.
+        Parametry
         ----------
-        X, Y, Z : FLOAT
+        X, Y, Z :
+        [float]
              współrzędne w układzie orto-kartezjańskim,
 
-        Returns
+        Zwracane wartości:
         -------
-        lat
-            [stopnie dziesiętne] - szerokość geodezyjna
-        lon
-            [stopnie dziesiętne] - długośc geodezyjna.
-        h : TYPE
-            [metry] - wysokość elipsoidalna
-        output [STR] - optional, defoulf
-            dec_degree - decimal degree
-            dms - degree, minutes, sec
+        results:
+            [lista wartości]:
+                lat:
+                    [stopnie dziesiętne] - szerokość geodezyjna
+                lon:
+                    [stopnie dziesiętne] - długość geodezyjna.
+                h :
+                    [metry] - wysokość elipsoidalna
+        output [plik .txt] :
+            dec_degree - stopnie dziesiętne
+            dms - stopnie, minuty, sekundy
         """
 
-        """
-        Processes a list of coordinate tuples (X, Y, Z) and converts them to geodetic coordinates.
-        """
         results = []
         for X, Y, Z in self.xyz:
             r = sqrt(X ** 2 + Y ** 2)
@@ -97,17 +97,19 @@ class Transformacje:
 
     def plh2xyz(self):
         """
-        Converts a list of geodetic coordinates (phi, lam, h) to Cartesian coordinates (X, Y, Z).
+        Konwertuje współrzędne geodezyjne (phi, lam, h) na współrzędne kartezjańskie (X, Y, Z).
 
-        Parameters
+        Parametry
         ----------
-        coordinates : list of tuples
-            Each tuple contains (phi, lam, h) in degrees and meters.
+        Phi, lam, h:
+        [lista krotek]
+            Każda krotka zawiera (phi, lam, h) w stopniach dziesiętnych i metrach.
 
-        Returns
+        Zwracane wartości
         -------
-        list of tuples
-            Each tuple contains (X, Y, Z) as floats, rounded to 3 decimal places.
+        X, Y, Z:
+        [lista krotek]
+            Każda krotka zawiera (X, Y, Z) jako liczby zmiennoprzecinkowe, zaokrąglone do 3 miejsc po przecinku.
         """
         results = []
         for phi, lam, h in self.plh:
@@ -128,21 +130,23 @@ class Transformacje:
 
     def deg2dms(self, deg):
         """
-        Zamiana stopni stopni dziesiętnych na
+        Zamiana stopni dziesiętnych na
         format stopnie minuty sekundy [st mm ss]
 
-        Parameters
+        Parametery
         ----------
-        deg : float
-            Decimal degree to be converted.
+        deg :
+        [float]
+            Stopnie dziesiętne do przeliczenia.
 
-        Returns
+        Zwracane wartości
         -------
-        tuple
-            A tuple (degrees, minutes, seconds) where:
-            - degrees is an integer,
-            - minutes is an integer,
-            - seconds is a float.
+        dms :
+        [krotka]
+            Krotka (stopnie, minuty, sekundy), w której:
+                - stopnie to liczba całkowita,
+                - minuty to liczba całkowita,
+                - sekundy to liczba zmiennoprzecinkowa.
         """
         negative = deg < 0
         deg = abs(deg)
@@ -158,20 +162,22 @@ class Transformacje:
 
     def xyz2neu(self):
         """
-        Trnasformacja współrzędnych do układu współrzędnych horyzontalnych
+        Transformacja współrzędnych do układu współrzędnych horyzontalnych
         north, east, up (n, e, u) z współrzędnych ortokartezjańskich (x, y, z).
         Transformacja odbywa się przy pomocy macierzy obrotu gdzie po przemnożeniu
         współrzędnych x, y, z, dostajemy współrzędne n, e u.
 
-        Parameters
+        Parametery
         ----------
-        X, Y, Z : FLOAT
-             współrzędne w układzie ortokartezjańskim,
+        X, Y, Z :
+        [float]
+             współrzędne w układzie ortokartezjańskim.
 
-        Returns
+        Zwracane wartości
         -------
-        N, E, U : FLOAT
-            współrzędne w ukladzie north, east, up
+        N, E, U :
+        [float]
+            współrzędne w układzie north, east, up.
         """
 
         results = []
@@ -206,22 +212,25 @@ class Transformacje:
 
     def fl22000(self):
         """
-        Algorytm transformacji szerokoci i wysokoci geodezyjnej (phi, lam) do układu współrzędnych
-        płaskiech prostokątnych PL-2000 (x-2000, y-2000).
+        Algorytm transformacji szerokości i wysokości geodezyjnej (phi, lam) do układu współrzędnych
+        płaskich prostokątnych PL-2000 (x-2000, y-2000).
         Jest to proces wykorzystujący współrzędne w odwzorowaniu G-K.
         Układ PL-2000 wykorzystuje 4 pasy południkowe o szerokoci 3 stopni (15, 18, 21, 24 [st])
 
-        Parameters
+        Parametry
         ----------
-        phi : FLOAT
+        phi :
+        [float]
             [stopnie dziesiętne]
-        lam : FLOAT
+        lam :
+        [float]
             [stopnie dziesiętne]
 
-        Returns
+        Zwracane wartości
         -------
-        X, Y : FLOAT
-            Współrzedne w układzie 2000
+        X, Y :
+        [float]
+            Współrzędne w układzie 2000.
 
         """
 
@@ -282,23 +291,26 @@ class Transformacje:
 
     def fl21992(self):
         """
-        Algorytm transformacji szerokoci i wysokoci geodezyjnej (phi, lam) do układu współrzędnych
-        płaskiech prostokątnych PL-1992 (x-1992, y-1992).
+        Algorytm transformacji szerokości i wysokości geodezyjnej (phi, lam) do układu współrzędnych
+        płaskich prostokątnych PL-1992 (x-1992, y-1992).
         Jest to proces wykorzystujący współrzędne w odwzorowaniu G-K.
-        Układ PL-1992 wykorzystuje 1 pas południkowokwy 19 stopni.
+        Układ PL-1992 wykorzystuje 1 pas południkowy 19 stopni.
 
 
-        Parameters
+        Parametery
         ----------
-        phi : FLOAT
+        phi :
+        [float]
             [stopnie dziesiętne]
-        lam : FLOAT
+        lam :
+        [float]
             [stopnie dziesiętne]
 
-        Returns
+        Zwracane wartości
         -------
-        X, Y  : FLOAT
-            Współrzedne w układzie 1992
+        X, Y  :
+        [float]
+            Współrzędne w układzie 1992.
 
         """
 
@@ -346,16 +358,19 @@ class Transformacje:
 
     def write2file(self, transformation, data):
         """
-        Writes coordinate data to a file.
+        Zapisuje współrzędne do pliku.
 
-        Parameters
+        Parametery
         ----------
-        filename : str
-            The name of the file where the data will be written.
-        data : list of tuples
-            A list of tuples containing coordinate data (latitude, longitude, height).
-        mode : str, optional
-            The file opening mode, 'w' for write (default) or 'a' for append.
+        filename :
+        [string]
+            Nazwa pliku, w którym dane zostaną zapisane.
+        data :
+        [lista krotek]
+            Lista krotek zawierających współrzędne.
+        Zwracane wartości
+        -------
+        Plik z danymi po transformacji
         """
         filename = ''
         if transformation == "xyz2plh":
@@ -372,16 +387,16 @@ class Transformacje:
             raise ValueError("Unsupported transformation type")
 
         with open(filename, "w") as file:
-            if isinstance(data, tuple):  # Handle single tuple data
-                data = [data]  # Convert to list for uniform processing
+            if isinstance(data, tuple):  # Przypadek danych będących jedną krotką
+                data = [data]  # Przekonwertowanie do listy dla ułatwienia uniwersalnego zapisu danych do pliku
 
             if transformation == "xyz2plh":
                 for lat, lon, h in data:
-                    if isinstance(lat, tuple) and isinstance(lon, tuple):  # Handling 'dms' format
+                    if isinstance(lat, tuple) and isinstance(lon, tuple):  # Przypadek danych w formacie 'dms'
                         lat_str = f"{lat[0]:02d}:{lat[1]:02d}:{lat[2]:.2f}"
                         lon_str = f"{lon[0]:02d}:{lon[1]:02d}:{lon[2]:.2f}"
                         line = f"{lat_str} {lon_str} {h:.3f}\n"
-                    else:  # Handling 'dec_degree' format
+                    else:  # Przypadek danych w formacie 'dec_degree'
                         line = f"{lat:.8f} {lon:.8f} {h:.3f}\n"
                     file.write(line)
             elif transformation == "plh2xyz":
@@ -403,109 +418,111 @@ class Transformacje:
 
     def readfile(self, filename):
         """
-        Reads a file with coordinates in the format X,Y,Z where each is separated by a comma.
+        Odczytuje plik ze współrzędnymi w formacie X,Y,Z, gdzie każda z nich oddzielona jest przecinkiem.
 
-        Parameters
+        Parametery
         ----------
-        filename : str
-            The name of the file to read.
+        filename :
+        [string]
+            Nazwa pliku do odczytu/ ścieżka do pliku.
 
-        Returns
+        Zwracane wartości
         -------
-        coordinates : list of tuples
-            A list where each tuple contains (X, Y, Z) as floats.
+        coordinates :
+        [lista krotek]
+            Lista, w której każda krotka zawiera (X, Y, Z) jako liczby zmiennoprzecinkowe.
         """
         coordinates = []
         with open(filename, 'r') as file:
             for line in file:
-                if line.strip():  # Ensure the line is not empty
+                if line.strip():  # Upewnienie się, że linia w pliku nie jest pusta
                     parts = line.strip().split(',')
-                    if len(parts) == 3:  # Ensure each line has exactly three values
+                    if len(parts) == 3:  # Upewnienie się, że linia ma dokładnie 3 wartości
                         try:
                             X = float(parts[0])
                             Y = float(parts[1])
                             Z = float(parts[2])
                             coordinates.append((X, Y, Z))
                         except ValueError as e:
-                            print(f"Error converting line to floats: {line}. Error: {e}")
+                            print(f"Wystąpił błąd w trakcie przemiany linii do float : {line}. Error: {e}")
                     else:
-                        print(f"Incorrect number of coordinates in line: {line}")
+                        print(f"Niepoprawna liczba współrzędnych w linii: {line}")
         return coordinates
 
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Coordinate transformation utility.")
+    parser = argparse.ArgumentParser(description="Zarządzanie narzędziem transformacji (w ramach CLI).")
 
-    # Optional flag to decide execution path
-    parser.add_argument('--use_cli', action='store_true', help='Set this flag to use command-line arguments instead of interactive prompts.')
+    # Flaga decydująca o tym czy program będzie interaktywny, czy będzie go można wywołać w 1 linijce
+    parser.add_argument('--use_cli', action='store_true', help='Ustaw ten znacznik, aby używać argumentów wiersza poleceń zamiast interaktywnych komunikatów.')
 
-    # Define arguments
-    parser.add_argument('--model', type=str, choices=['wgs84', 'grs80', 'mars'], help='Choose the geodetic model.')
-    parser.add_argument('--transformation', type=str, choices=['xyz2plh', 'plh2xyz', 'xyz2neu', 'fl22000', 'fl21992'], help='Choose the type of transformation.')
-    parser.add_argument('--file', type=str, help='Specify the source file with coordinates.')
-    parser.add_argument('--output_type', type=str, choices=['dec_degree', 'dms'], default='dec_degree', help='Specify output type for the xyz2plh transformation.')
+    # Sczytaj wartości z flag
+    parser.add_argument('--model', type=str, choices=['wgs84', 'grs80', 'mars'], help='Wybierz model elipsoidy.')
+    parser.add_argument('--transformation', type=str, choices=['xyz2plh', 'plh2xyz', 'xyz2neu', 'fl22000', 'fl21992'], help='Wybierz model transformacji.')
+    parser.add_argument('--file', type=str, help='Podaj nazwę/ ścieżkę do pliku z danymi źródłowymi.')
+    parser.add_argument('--output_type', type=str, choices=['dec_degree', 'dms'], default='dec_degree', help='Podaj typ zapisu danych w wypadku transformacji xyz2plh.')
 
-    # Parse arguments
+    # Sparsuj sczytane wartości
     args = parser.parse_args()
 
     if args.use_cli:
 
-        # Ensure all necessary arguments are provided when using CLI mode
+        # Upewnij się, że wszystkie wartości flag zostały podane przez użytkownika
         if not all([args.model, args.transformation, args.file]):
-            parser.error("When using --use_cli, --model, --transformation, and --file are required.")
+            parser.error("Przy podaniu flagi --use_cli wymagane są flagi: --model, --transformation, --file.")
 
-        # Create an instance of the transformation class with the chosen model
+        # Stwórz obiekt transformacji z wymaganym przez obiekt plikiem źródłowym i elipsoidą (modelem)
         geo = Transformacje(file=args.file, model=args.model)
 
-        # Perform the chosen transformation
+        # Wykonaj wybraną transformację
         if args.transformation == "xyz2plh":
             geo.xyz2plh(True, args.output_type)
-            print(f"Transformation of XYZ -> BLH saved to result_xyz2plh_{args.model}.txt")
+            print(f"Transformacja XYZ -> BLH została poprawnie zapisana do pliku: result_xyz2plh_{args.model}.txt")
         elif args.transformation == "plh2xyz":
             geo.plh2xyz()
-            print(f"Transformation of BLH -> XYZ saved to result_plh2xyz_{args.model}.txt")
+            print(f"Transformacja BLH -> XYZ została poprawnie zapisana do pliku: result_plh2xyz_{args.model}.txt")
         elif args.transformation == "xyz2neu":
             geo.xyz2neu()
-            print(f"Transformation of XYZ -> NEU saved to result_xyz2neu_{args.model}.txt")
+            print(f"Transformacja of XYZ -> NEU została poprawnie zapisana do pliku: result_xyz2neu_{args.model}.txt")
         elif args.transformation == "fl22000":
             geo.fl22000()
-            print(f"Transformation of BL -> 2000 saved to result_fl22000_{args.model}.txt")
+            print(f"Transformacja of BL -> 2000 została poprawnie zapisana do pliku: result_fl22000_{args.model}.txt")
         elif args.transformation == "fl21992":
             geo.fl21992()
-            print(f"Transformation of BL -> 1992 saved to result_fl21992_{args.model}.txt")
+            print(f"Transformacja of BL -> 1992 została poprawnie zapisana do pliku: result_fl21992_{args.model}.txt")
         else:
-            print("Wrong transformation type")
+            print("Podany typ transformacji jest niepoprawny.")
 
     else:
 
-        print("Pick model (one of: wgs84, grs80, mars)")
+        print("Wybierz model elipsoidy (jeden z: wgs84, grs80, mars)")
         model = input("")
-        print("Choose transformation (one of: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)")
+        print("Wybierz transformacje (jedną z : xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)")
         transformation = input("")
-        print("Provide source file")
+        print("Podaj nazwę pliku/ ścieżkę do pliku z danymi źródłowymi:")
         file = input("")
         print("")
 
         geo = Transformacje(file, model)
 
         if transformation == "xyz2plh":
-            print("Pick data output type for XYZ -> BLH transformation (one of: dec_degree, dms)")
+            print("Podaj typ zapisu danych w wypadku transformacji XYZ -> BLH (jeden z: dec_degree, dms)")
             output_type = input("")
             print("")
             geo.xyz2plh(True, output_type)
-            print(f"Transformation of XYZ -> BLH saved to result_xyz2plh_{model}.txt")
+            print(f"Transformacja of XYZ -> BLH została poprawnie zapisana do pliku: result_xyz2plh_{model}.txt")
         elif transformation == "plh2xyz":
             geo.plh2xyz()
-            print(f"Transformation of BLH -> XYZ saved to result_plh2xyz_{model}.txt")
+            print(f"Transformacja of BLH -> XYZ została poprawnie zapisana do pliku: result_plh2xyz_{model}.txt")
         elif transformation == "xyz2neu":
             geo.xyz2neu()
-            print(f"Transformation of XYZ -> NEUp saved to result_xyz2neu_{model}.txt")
+            print(f"Transformacja of XYZ -> NEUp została poprawnie zapisana do pliku: result_xyz2neu_{model}.txt")
         elif transformation == "fl22000":
             geo.fl22000()
-            print(f"Transformation of BL -> 2000 saved to result_fl22000_{model}.txt")
+            print(f"Transformacja of BL -> 2000 została poprawnie zapisana do pliku: result_fl22000_{model}.txt")
         elif transformation == "fl21992":
             geo.fl21992()
-            print(f"Transformation of BL -> 1992 saved to result_fl21992_{model}.txt")
+            print(f"Transformacja of BL -> 1992 została poprawnie zapisana do pliku: result_fl21992_{model}.txt")
         else:
-            print("Wrong transformation type")
+            print("Podany typ transformacji jest niepoprawny.")
