@@ -2,10 +2,10 @@
 
 ## Cel i funkcjonalność programu
 
-Program służy do transfomracji współrzędnych pomiędzy róznymi układami. Podając współrzędne w układzie X,Y,Z skrypt pozwala na następujące transformacje:
+Program służy do transformacji współrzędnych pomiędzy różnymi układami. Podając współrzędne w układzie X,Y,Z skrypt pozwala na następujące transformacje:
 
 - Transformacja X,Y,Z do fi, lambda, h (xyz2plh)
-- Transformcaja fi, lambda, h do X,Y,Z (plh2xyz)
+- Transformacja fi, lambda, h do X,Y,Z (plh2xyz)
 - Transformacja X,Y,Z do NEU (xyz2neu)
 - Transformacja X,Y,Z do układu 2000 (fl22000)
 - Transformacja X,Y,Z do układu 1992 (fl21992)
@@ -32,7 +32,7 @@ Program działa na następujących systemach operacyjnych:
 
 ## Użycie
 
-Aby mieć możliwośc skorzystania z programu należy sklonować to repozytorium na docelową maszynę, a następnie uruchomić CLI w sklonowanym folderze.
+Aby mieć możliwość skorzystania z programu należy sklonować to repozytorium na docelową maszynę, a następnie uruchomić CLI w sklonowanym folderze.
 
 Program można użyć na dwa sposoby:
 
@@ -41,14 +41,17 @@ Program można użyć na dwa sposoby:
 Interaktywne CLI polega na wywołaniu programu przy pomocy komendy **python main.py**, która skompiluje kod interaktywnie pytający o wymagane informacje potrzebne do wykonywania obliczeń i transformacji.
 
 1. Program poprosi nas o podanie jednej z dostępnych elipsoid (_**modelu**_)
->Pick model (one of: wgs84, grs80, mars)
-2. Program poprosi nas o podanie transformacji, którą chcemy przperowadzić
->Choose transformation (one of: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)
-3. Program poprosi nas o podanie nazwy pliku źródłowego, jeżeli znajduje się on w tym samym folderze co program, lub pełną ścieżkę do pliku jeżeli plik znajduje się w innym folderze
->Provide source file
+>Wybierz model elipsoidy (jeden z: wgs84, grs80, mars)
+2. Program poprosi nas o podanie transformacji, którą chcemy przeprowadzić
+>Wybierz transformacje (jedną z: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)
+3. Program poprosi nas o podanie nazwy pliku źródłowego, jeżeli znajduje się on w tym samym folderze co program, lub pełną ścieżkę do pliku, jeżeli plik znajduje się w innym folderze
+>Podaj nazwę pliku/ścieżkę do pliku z danymi źródłowymi:
   
 _W przypadku wybrania transformacji **xyz2plh** wymagane jest podanie trybu zapisania przeliczonych danych (stopnie lub stopnie dziesiętne)_
->Pick data output type for XYZ -> BLH transformation (one of: dec_degree, dms)
+>Podaj typ zapisu danych w wypadku transformacji XYZ -> BLH (jeden z: dec_degree, dms)
+
+_W przypadku wybrania transformacji **xyz2neu** wymagane jest podanie 3 dodatkowych współrzędnych w postaci float (np. **3664940.500**): **x0**, **y0** i **z0**_
+>Podaj wartości x0, y0, z0 dla transformacji XYZ -> NEUp
 
 Dane po przeliczeniu zostaną zapisane do pliku **.txt** w tym samym folderze gdzie program został uruchomiony z nazwą zależną od przeprowadzonej transformacji:
 
@@ -84,7 +87,7 @@ Plik result_xyz2plh.txt zostaje zapisany do folderu gdzie został wywołany prog
 >52.09727214 21.03153318 141.405  
 >52.09727210 21.03153332 141.408  
 >52.09727215 21.03153318 141.406
->> Wartości są rozdzielone znakiem " " (whitespace) 
+>> Wartości są rozdzielone znakiem " " (whitespace)
 
 
 ### CLI z flagami (wykonanie w jednej linii)
@@ -97,14 +100,17 @@ Aby uruchomić program w ten sposób należy do komendy wywołującej dodać fla
 Wywołując program przy użyciu tej flagi, należy podać wszystkie pozostałe flagi, inaczej otrzymamy błąd:
 
 - **--model** (wgs84, grs80, mars)
->--model wgs84 | --model grs80 | --model mars
+>--model **wgs84** | --model **grs80** | --model **mars**
 - **--transformation** (xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)
->--transformation xyz2plh | --transformation plh2xyz | --transformation xyz2neu | --transformation fl22000 | --transformation fl21992
+>--transformation **xyz2plh** | --transformation **plh2xyz** | --transformation **xyz2neu** | --transformation **fl22000** | --transformation **fl21992**
 - **--file** (nazwa pliku / ścieżka do pliku)
->--file file.txt
+>--file **file.txt**
 
 _W przypadku wybrania transformacji **xyz2plh** można podać tryb zapisania przeliczonych danych **--output_type** (stopnie - **dms** lub stopnie dziesiętne - **dec_degree**), domyślnie (jeżeli flagi nie podamy) ta wartość to stopnie dziesiętne - **dec_degree**_
->--output_type dec_degree | --output_type dms
+>--output_type **dec_degree** | --output_type **dms**
+
+_W przypadku wybrania transformacji **xyz2plh** wymagane jest podanie 3 dodatkowych współrzędnych w postaci float (np. **3664940.500**): **x0**, **y0** i **z0**_
+>--neu **x0_value y0_value z0_value**
 
 #### Przykładowe użycie programu:
 
@@ -130,7 +136,7 @@ Plik **result_xyz2plh.txt** zostaje zapisany do folderu gdzie został wywołany 
 
 ### Plik z danymi źródłowymi
 
-Plik z danymi źródłowymi powinien być zapisany w układzie współrzędnych XYZ w następujący sposób (oddzielenie wartości znakiem "**,**" )
+Plik z danymi źródłowymi powinien być zapisany w układzie współrzędnych XYZ w następujący sposób (oddzielenie wartości znakiem "**,**")
 >wartosc_X,wartosc_Y,wartosc_Z
 
 Przykład (**_input_xyz.txt_**):

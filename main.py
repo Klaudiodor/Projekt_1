@@ -511,16 +511,16 @@ if __name__ == "__main__":
 
         print("Wybierz model elipsoidy (jeden z: wgs84, grs80, mars)")
         model = input("")
-        print("Wybierz transformacje (jedną z : xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)")
+        print("Wybierz transformacje (jedną z: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)")
         transformation = input("")
-        print("Podaj nazwę pliku/ ścieżkę do pliku z danymi źródłowymi:")
+        print("Podaj nazwę pliku/ścieżkę do pliku z danymi źródłowymi:")
         file = input("")
         print("")
 
         geo = Transformacje(file, model)
 
         if transformation == "xyz2plh":
-            print("Podaj typ zapisu danych w wypadku transformacji XYZ -> BLH (jeden z: dec_degree, dms)")
+            print("Podaj typ zapisu danych dla transformacji XYZ -> BLH (jeden z: dec_degree, dms)")
             output_type = input("")
             print("")
             geo.xyz2plh(True, output_type)
