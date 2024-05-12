@@ -84,7 +84,7 @@ Plik result_xyz2plh.txt zostaje zapisany do folderu gdzie został wywołany prog
 >52.09727214 21.03153318 141.405  
 >52.09727210 21.03153332 141.408  
 >52.09727215 21.03153318 141.406
->> Wartości są rozdzielone znakiem " " (whitespace)
+>> Wartości są rozdzielone znakiem " " (whitespace) 
 
 
 ### CLI z flagami (wykonanie w jednej linii)
