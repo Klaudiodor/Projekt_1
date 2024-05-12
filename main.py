@@ -160,7 +160,7 @@ class Transformacje:
 
         return (d, m, s)
 
-    def xyz2neu(self):
+    def xyz2neu(self, x0, y0, z0):
         """
         Transformacja współrzędnych do układu współrzędnych horyzontalnych
         north, east, up (n, e, u) z współrzędnych ortokartezjańskich (x, y, z).
@@ -179,7 +179,13 @@ class Transformacje:
         [float]
             współrzędne w układzie north, east, up.
         """
+        # x0 = 3664940.500
+        # y0 = 1409153.590
+        # z0 = 5009571.170
 
+        x0 = float(x0)
+        y0 = float(y0)
+        z0 = float(z0)
         results = []
         for x, y, z in self.xyz:
             p = sqrt(x ** 2 + y ** 2)
@@ -198,7 +204,8 @@ class Transformacje:
                        [-sin(f) * sin(l), cos(l), sin(l) * cos(f)],
                        [cos(f), 0, sin(f)]])
 
-            dX = array([x, y, z])
+            #dX = array([x, y, z])
+            dX = array([x-x0, y-y0, z-z0])
             dx = R.T @ dX
             n = dx[0]
             e = dx[1]
@@ -206,6 +213,7 @@ class Transformacje:
 
             results.append((n, e, u))
 
+        # print(results)
         self.write2file("xyz2neu", results)
 
         return results
@@ -404,8 +412,11 @@ class Transformacje:
                     line = f"{X:.3f} {Y:.3f} {Z:.3f}\n"
                     file.write(line)
             elif transformation == "xyz2neu":
-                for n, e, u in data:
-                    line = f"{n:.3f} {e:.3f} {u:.3f}\n"
+                for index, (n, e, u) in enumerate(data):
+                    if index == 0:
+                        line = f"{n} {e} {u}\n"
+                    else:
+                        line = f"{n:.3f} {e:.3f} {u:.3f}\n"
                     file.write(line)
             elif transformation == "fl22000":
                 for x_2000, y_2000 in data:
@@ -454,7 +465,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Zarządzanie narzędziem transformacji (w ramach CLI).")
 
-    # Flaga decydująca o tym czy program będzie interaktywny, czy będzie go można wywołać w 1 linijce
+    # Flaga decydująca o tym, czy program będzie interaktywny, czy będzie go można wywołać w 1 linijce
     parser.add_argument('--use_cli', action='store_true', help='Ustaw ten znacznik, aby używać argumentów wiersza poleceń zamiast interaktywnych komunikatów.')
 
     # Sczytaj wartości z flag
@@ -462,6 +473,7 @@ if __name__ == "__main__":
     parser.add_argument('--transformation', type=str, choices=['xyz2plh', 'plh2xyz', 'xyz2neu', 'fl22000', 'fl21992'], help='Wybierz model transformacji.')
     parser.add_argument('--file', type=str, help='Podaj nazwę/ ścieżkę do pliku z danymi źródłowymi.')
     parser.add_argument('--output_type', type=str, choices=['dec_degree', 'dms'], default='dec_degree', help='Podaj typ zapisu danych w wypadku transformacji xyz2plh.')
+    parser.add_argument('--neu', type=float, nargs=3, help='Podaj wartości x0, y0 i z0 dla transformacji xyz2neu, w przeciwnym wypadku transformacja nie dojdzie do skutku.')
 
     # Sparsuj sczytane wartości
     args = parser.parse_args()
@@ -483,7 +495,8 @@ if __name__ == "__main__":
             geo.plh2xyz()
             print(f"Transformacja BLH -> XYZ została poprawnie zapisana do pliku: result_plh2xyz_{args.model}.txt")
         elif args.transformation == "xyz2neu":
-            geo.xyz2neu()
+            x0, y0, z0 = args.neu
+            geo.xyz2neu(x0, y0, z0)
             print(f"Transformacja of XYZ -> NEU została poprawnie zapisana do pliku: result_xyz2neu_{args.model}.txt")
         elif args.transformation == "fl22000":
             geo.fl22000()
@@ -516,7 +529,12 @@ if __name__ == "__main__":
             geo.plh2xyz()
             print(f"Transformacja of BLH -> XYZ została poprawnie zapisana do pliku: result_plh2xyz_{model}.txt")
         elif transformation == "xyz2neu":
-            geo.xyz2neu()
+            print("Podaj wartości x0, y0, z0 dla transformacji XYZ -> NEUp")
+            x0 = input("x0: ")
+            y0 = input("y0: ")
+            z0 = input("z0: ")
+            print("")
+            geo.xyz2neu(x0, y0, z0)
             print(f"Transformacja of XYZ -> NEUp została poprawnie zapisana do pliku: result_xyz2neu_{model}.txt")
         elif transformation == "fl22000":
             geo.fl22000()
