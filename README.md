@@ -46,6 +46,8 @@ Interaktywne CLI polega na wywołaniu programu przy pomocy komendy **python main
 >Wybierz transformacje (jedną z: xyz2plh, plh2xyz, xyz2neu, fl22000, fl21992)
 3. Program poprosi nas o podanie nazwy pliku źródłowego, jeżeli znajduje się on w tym samym folderze co program, lub pełną ścieżkę do pliku, jeżeli plik znajduje się w innym folderze
 >Podaj nazwę pliku/ścieżkę do pliku z danymi źródłowymi:
+4. Program poprosi nas o podanie rodzaju współrzędnych pliku
+>Podaj rodzaj współrzędnych zawartych w pliku (jeden z: xyz, blh, fl)
   
 _W przypadku wybrania transformacji **xyz2plh** wymagane jest podanie trybu zapisania przeliczonych danych (stopnie lub stopnie dziesiętne)_
 >Podaj typ zapisu danych w wypadku transformacji XYZ -> BLH (jeden z: dec_degree, dms)
@@ -71,23 +73,27 @@ Dane po przeliczeniu zostaną zapisane do pliku **.txt** w tym samym folderze gd
 >wgs84
 4. Wybieramy transformację xyz2plh
 >xyz2plh
-5. Wybieramy zapisanie transformacji w formie stopni dziesiętnych
+5. Podajemy nazwę / ścieżkę do pliku z danymi wejściowymi
+>input_xyz.txt
+6. Podajemy rodzaj współrzędnych znajdujących się w pliku
+>xyz
+7. Wybieramy zapisanie transformacji w formie stopni dziesiętnych
 >dec_degree
 
-Plik result_xyz2plh.txt zostaje zapisany do folderu gdzie został wywołany program z następującymi wartościami
->52.09727222 21.03153333 141.399  
->52.09727216 21.03153314 141.400  
->52.09727212 21.03153296 141.403  
->52.09727209 21.03153277 141.408  
->52.09727209 21.03153323 141.410  
->52.09727212 21.03153318 141.402  
->52.09727207 21.03153300 141.406  
->52.09727206 21.03153281 141.411  
->52.09727212 21.03153325 141.407  
->52.09727214 21.03153318 141.405  
->52.09727210 21.03153332 141.408  
->52.09727215 21.03153318 141.406
->> Wartości są rozdzielone znakiem " " (whitespace)
+Plik result_xyz2plh_wgs84.txt zostaje zapisany do folderu gdzie został wywołany program z następującymi wartościami (B[deg], L[deg], H[m])
+>52.09727222,21.03153333,141.399  
+>52.09727216,21.03153314,141.400  
+>52.09727212,21.03153296,141.403  
+>52.09727209,21.03153277,141.408  
+>52.09727209,21.03153323,141.410  
+>52.09727212,21.03153318,141.402  
+>52.09727207,21.03153300,141.406  
+>52.09727206,21.03153281,141.411  
+>52.09727212,21.03153325,141.407  
+>52.09727214,21.03153318,141.405  
+>52.09727210,21.03153332,141.408  
+>52.09727215,21.03153318,141.406
+>> Wartości są rozdzielone znakiem ","
 
 
 ### CLI z flagami (wykonanie w jednej linii)
@@ -105,6 +111,8 @@ Wywołując program przy użyciu tej flagi, należy podać wszystkie pozostałe 
 >--transformation **xyz2plh** | --transformation **plh2xyz** | --transformation **xyz2neu** | --transformation **fl22000** | --transformation **fl21992**
 - **--file** (nazwa pliku / ścieżka do pliku)
 >--file **file.txt**
+- **--input_type** (xyz, blh, fl)
+>--input_type xyz | --input_type blh | --input_type fl
 
 _W przypadku wybrania transformacji **xyz2plh** można podać tryb zapisania przeliczonych danych **--output_type** (stopnie - **dms** lub stopnie dziesiętne - **dec_degree**), domyślnie (jeżeli flagi nie podamy) ta wartość to stopnie dziesiętne - **dec_degree**_
 >--output_type **dec_degree** | --output_type **dms**
@@ -116,39 +124,73 @@ _W przypadku wybrania transformacji **xyz2plh** wymagane jest podanie 3 dodatkow
 
 1. Przechodzimy w CLI do folderu z programem przy użyciu komendy cd
 >cd Projekt_1
-2. Wywołujemy program w modelu **wgs84**, z transformacją **xyz2plh** w formacie **stopni dziesiętnych** (_dec_degree_), używając pliku źródłowego **input_xyz.txt**
->python main.py --use_cli --model wgs84 --transformation xyz2plh --file input_xyz.txt --output_type dec_degree
+2. Wywołujemy program w modelu **wgs84**, z transformacją **xyz2plh** z układu współrzędnych **xyz** formacie **stopni dziesiętnych** (_dec_degree_), używając pliku źródłowego **input_xyz.txt**
+>python main.py --use_cli --model wgs84 --transformation xyz2plh --file input_xyz.txt --input_type xyz --output_type dec_degree
 
-Plik **result_xyz2plh.txt** zostaje zapisany do folderu gdzie został wywołany program z następującymi wartościami
->52.09727222 21.03153333 141.399  
->52.09727216 21.03153314 141.400  
->52.09727212 21.03153296 141.403  
->52.09727209 21.03153277 141.408  
->52.09727209 21.03153323 141.410  
->52.09727212 21.03153318 141.402  
->52.09727207 21.03153300 141.406  
->52.09727206 21.03153281 141.411  
->52.09727212 21.03153325 141.407  
->52.09727214 21.03153318 141.405  
->52.09727210 21.03153332 141.408  
->52.09727215 21.03153318 141.406
->> Wartości są rozdzielone znakiem " " (whitespace)
+Plik **result_xyz2plh_wgs84.txt** zostaje zapisany do folderu gdzie został wywołany program z następującymi wartościami (B[deg], L[deg], H[m])
+>52.09727222,21.03153333,141.399  
+>52.09727216,21.03153314,141.400  
+>52.09727212,21.03153296,141.403  
+>52.09727209,21.03153277,141.408  
+>52.09727209,21.03153323,141.410  
+>52.09727212,21.03153318,141.402  
+>52.09727207,21.03153300,141.406  
+>52.09727206,21.03153281,141.411  
+>52.09727212,21.03153325,141.407  
+>52.09727214,21.03153318,141.405  
+>52.09727210,21.03153332,141.408  
+>52.09727215,21.03153318,141.406
+>> Wartości są rozdzielone znakiem ","
 
-### Plik z danymi źródłowymi
+### Pliki z danymi źródłowymi
 
-Plik z danymi źródłowymi powinien być zapisany w układzie współrzędnych XYZ w następujący sposób (oddzielenie wartości znakiem "**,**")
->wartosc_X,wartosc_Y,wartosc_Z
+- XYZ - plik z danymi źródłowymi powinien być zapisany w układzie współrzędnych XYZ w następujący sposób (oddzielenie wartości znakiem "**,**")
+>wartosc_X[m],wartosc_Y[m],wartosc_Z[m]
 
 Przykład (**_input_xyz.txt_**):
->3664940.500,1409153.590,5009571.170
->3664940.510,1409153.580,5009571.167
->3664940.520,1409153.570,5009571.167
->3664940.530,1409153.560,5009571.168
->3664940.520,1409153.590,5009571.170
->3664940.514,1409153.584,5009571.166
->3664940.525,1409153.575,5009571.166
->3664940.533,1409153.564,5009571.169
->3664940.515,1409153.590,5009571.170
->3664940.514,1409153.584,5009571.169
->3664940.515,1409153.595,5009571.169
+>3664940.500,1409153.590,5009571.170  
+>3664940.510,1409153.580,5009571.167  
+>3664940.520,1409153.570,5009571.167  
+>3664940.530,1409153.560,5009571.168  
+>3664940.520,1409153.590,5009571.170  
+>3664940.514,1409153.584,5009571.166  
+>3664940.525,1409153.575,5009571.166  
+>3664940.533,1409153.564,5009571.169  
+>3664940.515,1409153.590,5009571.170  
+>3664940.514,1409153.584,5009571.169  
+>3664940.515,1409153.595,5009571.169  
 >3664940.513,1409153.584,5009571.171
+
+- BLH - plik z danymi źródłowymi powinien być zapisany w układzie współrzędnych BLH w następujący sposób (oddzielenie wartości znakiem "**,**")
+>wartosc_B[deg],wartosc_L[deg],wartosc_H[m]
+
+Przykład (**_input_blh.txt_**) w elipsoidzie grs80:
+>52.09727222,21.03153333,141.399  
+>52.09727216,21.03153314,141.400  
+>52.09727212,21.03153296,141.403  
+>52.09727209,21.03153277,141.408  
+>52.09727209,21.03153323,141.410  
+>52.09727212,21.03153318,141.402  
+>52.09727207,21.03153300,141.406  
+>52.09727206,21.03153281,141.411  
+>52.09727212,21.03153325,141.407  
+>52.09727214,21.03153318,141.405  
+>52.09727210,21.03153332,141.408  
+>52.09727215,21.03153318,141.406
+
+- FL - plik z danymi źródłowymi powinien być zapisany w układzie współrzędnych FL w następujący sposób (oddzielenie wartości znakiem "**,**")
+>wartosc_F[deg],wartosc_L[deg]
+
+Przykład (**_input_fl.txt_**) w elipsoidzie grs80:
+>52.09727222,21.03153333  
+>52.09727216,21.03153314  
+>52.09727212,21.03153296  
+>52.09727209,21.03153277  
+>52.09727209,21.03153323  
+>52.09727212,21.03153318  
+>52.09727207,21.03153300  
+>52.09727206,21.03153281  
+>52.09727212,21.03153325  
+>52.09727214,21.03153318  
+>52.09727210,21.03153332  
+>52.09727215,21.03153318

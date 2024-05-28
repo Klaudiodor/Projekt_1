@@ -7,7 +7,7 @@ from numpy import abs, array
 o = object()
 
 class Transformacje:
-    def __init__(self, file, model: str = "wgs84"):
+    def __init__(self, file, model: str = "wgs84", data_type: str = "xyz"):
         """
         Parametry elipsoid:
             a - duża półoś elipsoidy - promień równikowy
@@ -35,8 +35,11 @@ class Transformacje:
         self.ecc = sqrt(2 * self.flat - self.flat ** 2)  # eccentricity  WGS84:0.0818191910428
         self.ecc2 = (2 * self.flat - self.flat ** 2)  # eccentricity**2
 
-        self.xyz = self.readfile(file)
-        self.plh = self.xyz2plh(False)
+        self.data_type = data_type
+        self.data = self.readfile(file, data_type)
+
+        # self.xyz = self.readfile(file)
+        # self.plh = self.xyz2plh(False)
 
     def get_model(self):
         return self.model
@@ -68,7 +71,7 @@ class Transformacje:
         """
 
         results = []
-        for X, Y, Z in self.xyz:
+        for X, Y, Z in self.data:
             r = sqrt(X ** 2 + Y ** 2)
             lat_prev = atan(Z / (r * (1 - self.ecc2)))
             lat = 0
@@ -112,7 +115,7 @@ class Transformacje:
             Każda krotka zawiera (X, Y, Z) jako liczby zmiennoprzecinkowe, zaokrąglone do 3 miejsc po przecinku.
         """
         results = []
-        for phi, lam, h in self.plh:
+        for phi, lam, h in self.data:
             phi = radians(phi)
             lam = radians(lam)
 
@@ -187,7 +190,7 @@ class Transformacje:
         y0 = float(y0)
         z0 = float(z0)
         results = []
-        for x, y, z in self.xyz:
+        for x, y, z in self.data:
             p = sqrt(x ** 2 + y ** 2)
             f = atan(z / (p * (1 - self.ecc2)))
 
@@ -249,7 +252,7 @@ class Transformacje:
 
         results = []
 
-        for phi, lam, h in self.plh:
+        for phi, lam in self.data:
 
             phi = radians(phi)
             lam = radians(lam)
@@ -330,7 +333,7 @@ class Transformacje:
 
         results = []
 
-        for phi, lam, h in self.plh:
+        for phi, lam in self.data:
             phi = radians(phi)
             lam = radians(lam)
 
@@ -403,31 +406,31 @@ class Transformacje:
                     if isinstance(lat, tuple) and isinstance(lon, tuple):  # Przypadek danych w formacie 'dms'
                         lat_str = f"{lat[0]:02d}:{lat[1]:02d}:{lat[2]:.2f}"
                         lon_str = f"{lon[0]:02d}:{lon[1]:02d}:{lon[2]:.2f}"
-                        line = f"{lat_str} {lon_str} {h:.3f}\n"
+                        line = f"{lat_str},{lon_str},{h:.3f}\n"
                     else:  # Przypadek danych w formacie 'dec_degree'
-                        line = f"{lat:.8f} {lon:.8f} {h:.3f}\n"
+                        line = f"{lat:.8f},{lon:.8f},{h:.3f}\n"
                     file.write(line)
             elif transformation == "plh2xyz":
                 for X, Y, Z in data:
-                    line = f"{X:.3f} {Y:.3f} {Z:.3f}\n"
+                    line = f"{X:.3f},{Y:.3f},{Z:.3f}\n"
                     file.write(line)
             elif transformation == "xyz2neu":
                 for index, (n, e, u) in enumerate(data):
                     if index == 0:
-                        line = f"{n} {e} {u}\n"
+                        line = f"{n},{e},{u}\n"
                     else:
-                        line = f"{n:.3f} {e:.3f} {u:.3f}\n"
+                        line = f"{n:.3f},{e:.3f},{u:.3f}\n"
                     file.write(line)
             elif transformation == "fl22000":
                 for x_2000, y_2000 in data:
-                    line = f"{x_2000:.3f} {y_2000:.3f}\n"
+                    line = f"{x_2000:.3f},{y_2000:.3f}\n"
                     file.write(line)
             elif transformation == "fl21992":
                 for x_1992, y_1992 in data:
-                    line = f"{x_1992:.3f} {y_1992:.3f}\n"
+                    line = f"{x_1992:.3f},{y_1992:.3f}\n"
                     file.write(line)
 
-    def readfile(self, filename):
+    def readfile(self, filename, data_type):
         """
         Odczytuje plik ze współrzędnymi w formacie X,Y,Z, gdzie każda z nich oddzielona jest przecinkiem.
 
@@ -444,20 +447,51 @@ class Transformacje:
             Lista, w której każda krotka zawiera (X, Y, Z) jako liczby zmiennoprzecinkowe.
         """
         coordinates = []
-        with open(filename, 'r') as file:
-            for line in file:
-                if line.strip():  # Upewnienie się, że linia w pliku nie jest pusta
-                    parts = line.strip().split(',')
-                    if len(parts) == 3:  # Upewnienie się, że linia ma dokładnie 3 wartości
-                        try:
-                            X = float(parts[0])
-                            Y = float(parts[1])
-                            Z = float(parts[2])
-                            coordinates.append((X, Y, Z))
-                        except ValueError as e:
-                            print(f"Wystąpił błąd w trakcie przemiany linii do float : {line}. Error: {e}")
-                    else:
-                        print(f"Niepoprawna liczba współrzędnych w linii: {line}")
+
+        if data_type == "xyz":
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.strip():  # Upewnienie się, że linia w pliku nie jest pusta
+                        parts = line.strip().split(',')
+                        if len(parts) == 3:  # Upewnienie się, że linia ma dokładnie 3 wartości
+                            try:
+                                x = float(parts[0])
+                                y = float(parts[1])
+                                z = float(parts[2])
+                                coordinates.append((x, y, z))
+                            except ValueError as e:
+                                print(f"Wystąpił błąd w trakcie przemiany linii do float : {line}. Error: {e}")
+                        else:
+                            print(f"Niepoprawna liczba współrzędnych w linii: {line}")
+        if data_type == "blh":
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.strip():  # Upewnienie się, że linia w pliku nie jest pusta
+                        parts = line.strip().split(',')
+                        if len(parts) == 3:  # Upewnienie się, że linia ma dokładnie 3 wartości
+                            try:
+                                b = float(parts[0])
+                                l = float(parts[1])
+                                h = float(parts[2])
+                                coordinates.append((b, l, h))
+                            except ValueError as e:
+                                print(f"Wystąpił błąd w trakcie przemiany linii do float : {line}. Error: {e}")
+                        else:
+                            print(f"Niepoprawna liczba współrzędnych w linii: {line}")
+        if data_type == "fl":
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.strip():  # Upewnienie się, że linia w pliku nie jest pusta
+                        parts = line.strip().split(',')
+                        if len(parts) == 2:  # Upewnienie się, że linia ma dokładnie 3 wartości
+                            try:
+                                f = float(parts[0])
+                                l = float(parts[1])
+                                coordinates.append((f, l))
+                            except ValueError as e:
+                                print(f"Wystąpił błąd w trakcie przemiany linii do float : {line}. Error: {e}")
+                        else:
+                            print(f"Niepoprawna liczba współrzędnych w linii: {line}")
         return coordinates
 
 
@@ -472,6 +506,7 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, choices=['wgs84', 'grs80', 'mars'], help='Wybierz model elipsoidy.')
     parser.add_argument('--transformation', type=str, choices=['xyz2plh', 'plh2xyz', 'xyz2neu', 'fl22000', 'fl21992'], help='Wybierz model transformacji.')
     parser.add_argument('--file', type=str, help='Podaj nazwę/ ścieżkę do pliku z danymi źródłowymi.')
+    parser.add_argument('--input_type', type=str, choices=['xyz', 'blh', 'fl'], help='Wybierz rodzaj współrzędnych podawanych do programu.')
     parser.add_argument('--output_type', type=str, choices=['dec_degree', 'dms'], default='dec_degree', help='Podaj typ zapisu danych w wypadku transformacji xyz2plh.')
     parser.add_argument('--neu', type=float, nargs=3, help='Podaj wartości x0, y0 i z0 dla transformacji xyz2neu, w przeciwnym wypadku transformacja nie dojdzie do skutku.')
 
@@ -481,27 +516,27 @@ if __name__ == "__main__":
     if args.use_cli:
 
         # Upewnij się, że wszystkie wartości flag zostały podane przez użytkownika
-        if not all([args.model, args.transformation, args.file]):
-            parser.error("Przy podaniu flagi --use_cli wymagane są flagi: --model, --transformation, --file.")
+        if not all([args.model, args.transformation, args.file, args.input_type]):
+            parser.error("Przy podaniu flagi --use_cli wymagane są flagi: --model, --transformation, --file, --input_type.")
 
         # Stwórz obiekt transformacji z wymaganym przez obiekt plikiem źródłowym i elipsoidą (modelem)
-        geo = Transformacje(file=args.file, model=args.model)
+        geo = Transformacje(file=args.file, model=args.model, data_type=args.input_type)
 
         # Wykonaj wybraną transformację
-        if args.transformation == "xyz2plh":
+        if args.transformation == "xyz2plh" and args.input_type == "xyz":
             geo.xyz2plh(True, args.output_type)
             print(f"Transformacja XYZ -> BLH została poprawnie zapisana do pliku: result_xyz2plh_{args.model}.txt")
-        elif args.transformation == "plh2xyz":
+        elif args.transformation == "plh2xyz" and args.input_type == "blh":
             geo.plh2xyz()
             print(f"Transformacja BLH -> XYZ została poprawnie zapisana do pliku: result_plh2xyz_{args.model}.txt")
-        elif args.transformation == "xyz2neu":
+        elif args.transformation == "xyz2neu" and args.input_type == "xyz":
             x0, y0, z0 = args.neu
             geo.xyz2neu(x0, y0, z0)
             print(f"Transformacja of XYZ -> NEU została poprawnie zapisana do pliku: result_xyz2neu_{args.model}.txt")
-        elif args.transformation == "fl22000":
+        elif args.transformation == "fl22000" and args.input_type == "fl":
             geo.fl22000()
             print(f"Transformacja of BL -> 2000 została poprawnie zapisana do pliku: result_fl22000_{args.model}.txt")
-        elif args.transformation == "fl21992":
+        elif args.transformation == "fl21992" and args.input_type == "fl":
             geo.fl21992()
             print(f"Transformacja of BL -> 1992 została poprawnie zapisana do pliku: result_fl21992_{args.model}.txt")
         else:
@@ -515,20 +550,22 @@ if __name__ == "__main__":
         transformation = input("")
         print("Podaj nazwę pliku/ścieżkę do pliku z danymi źródłowymi:")
         file = input("")
+        print("Podaj rodzaj współrzędnych zawartych w pliku (jeden z: xyz, blh, fl)")
+        data_type = input("")
         print("")
 
-        geo = Transformacje(file, model)
+        geo = Transformacje(file, model, data_type)
 
-        if transformation == "xyz2plh":
+        if transformation == "xyz2plh" and data_type == "xyz":
             print("Podaj typ zapisu danych dla transformacji XYZ -> BLH (jeden z: dec_degree, dms)")
             output_type = input("")
             print("")
             geo.xyz2plh(True, output_type)
             print(f"Transformacja of XYZ -> BLH została poprawnie zapisana do pliku: result_xyz2plh_{model}.txt")
-        elif transformation == "plh2xyz":
+        elif transformation == "plh2xyz" and data_type == "blh":
             geo.plh2xyz()
             print(f"Transformacja of BLH -> XYZ została poprawnie zapisana do pliku: result_plh2xyz_{model}.txt")
-        elif transformation == "xyz2neu":
+        elif transformation == "xyz2neu" and data_type == "xyz":
             print("Podaj wartości x0, y0, z0 dla transformacji XYZ -> NEUp")
             x0 = input("x0: ")
             y0 = input("y0: ")
@@ -536,10 +573,10 @@ if __name__ == "__main__":
             print("")
             geo.xyz2neu(x0, y0, z0)
             print(f"Transformacja of XYZ -> NEUp została poprawnie zapisana do pliku: result_xyz2neu_{model}.txt")
-        elif transformation == "fl22000":
+        elif transformation == "fl22000" and data_type == "fl":
             geo.fl22000()
             print(f"Transformacja of BL -> 2000 została poprawnie zapisana do pliku: result_fl22000_{model}.txt")
-        elif transformation == "fl21992":
+        elif transformation == "fl21992" and data_type == "fl":
             geo.fl21992()
             print(f"Transformacja of BL -> 1992 została poprawnie zapisana do pliku: result_fl21992_{model}.txt")
         else:
